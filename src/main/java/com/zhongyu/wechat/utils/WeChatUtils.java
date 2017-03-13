@@ -2,7 +2,6 @@ package com.zhongyu.wechat.utils;
 
 import com.alibaba.fastjson.JSONObject;
 import com.zhongyu.wechat.bean.AccessToken;
-import com.zhongyu.wechat.bean.Menu;
 import com.zhongyu.wechat.constants.RequestType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
