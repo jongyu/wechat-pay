@@ -2,7 +2,7 @@ package com.zhongyu.wechat.utils;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.zhongyu.wechat.constants.RequestType;
+import com.zhongyu.wechat.common.RequestType;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;

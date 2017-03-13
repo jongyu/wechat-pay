@@ -6,7 +6,7 @@ import java.util.Properties;
 /**
  * Created by ZhongYu on 3/13/2017.
  */
-public class WeChatUrl {
+public class WeChatProperties {
 
     private static Properties wechatProperties;
 
@@ -14,7 +14,7 @@ public class WeChatUrl {
         if (null == wechatProperties) {
             try {
                 Properties properties = new Properties();
-                InputStream inputStream = WeChatUrl.class.getClassLoader().getResourceAsStream("wechat.properties");
+                InputStream inputStream = WeChatProperties.class.getClassLoader().getResourceAsStream("wechat.properties");
                 properties.load(inputStream);
                 wechatProperties = properties;
             } catch (Exception e) {

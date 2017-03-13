@@ -2,7 +2,8 @@ package com.zhongyu.wechat.utils;
 
 import com.alibaba.fastjson.JSONObject;
 import com.zhongyu.wechat.bean.AccessToken;
-import com.zhongyu.wechat.constants.RequestType;
+import com.zhongyu.wechat.common.RequestType;
+import com.zhongyu.wechat.common.WeChatConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,14 +17,12 @@ public class WeChatUtils {
     /**
      * 获取微信access_token
      *
-     * @param appID
-     * @param appSecret
      * @return
      */
-    public static AccessToken getAccessToken(String appID, String appSecret) {
+    public static AccessToken getAccessToken() {
         AccessToken accessToken = null;
         String requestUrl = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=APPID&secret=APPSECRET";
-        requestUrl = requestUrl.replace("APPID", appID).replace("APPSECRET", appSecret);
+        requestUrl = requestUrl.replace("APPID", WeChatConfig.APPID).replace("APPSECRET", WeChatConfig.APPSECRET);
         JSONObject jsonObject = HttpUtils.httpRequest(requestUrl, String.valueOf(RequestType.GET), null);
         if (null != jsonObject) {
             try {

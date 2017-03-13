@@ -1,5 +1,7 @@
 package com.zhongyu.wechat.utils;
 
+import com.zhongyu.wechat.common.WeChatConfig;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
@@ -9,10 +11,8 @@ import java.util.Arrays;
  */
 public class SignUtil {
 
-    private static String token = "wechat";
-
     public static boolean checkSignature(String signature, String timestamp, String nonce) {
-        String[] arr = new String[]{token, timestamp, nonce};
+        String[] arr = new String[]{WeChatConfig.TOKEN, timestamp, nonce};
         Arrays.sort(arr);
         StringBuilder content = new StringBuilder();
         for (int i = 0; i < arr.length; i++) {

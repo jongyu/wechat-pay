@@ -9,8 +9,8 @@ import org.junit.Test;
 public class WeChatUtilsTest {
 
     @Test
-    public void testAccessToken(){
-        AccessToken accessToken = WeChatUtils.getAccessToken("wxa0bf65511aa963b5","8e87ae09aeea790800eed01de553f975");
+    public void testAccessToken() {
+        AccessToken accessToken = WeChatUtils.getAccessToken();
         System.out.println(accessToken.getAccessToken());
     }
 
