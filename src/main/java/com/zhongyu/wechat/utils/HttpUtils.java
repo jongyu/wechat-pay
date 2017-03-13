@@ -2,6 +2,7 @@ package com.zhongyu.wechat.utils;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.zhongyu.wechat.constants.RequestType;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
@@ -40,7 +41,7 @@ public class HttpUtils {
             //设置请求方式（GET/POST）
             httpUrlConn.setRequestMethod(requestMethod);
 
-            if ("GET".equalsIgnoreCase(requestMethod)) {
+            if (String.valueOf(RequestType.GET).equalsIgnoreCase(requestMethod)) {
                 httpUrlConn.connect();
             }
 
@@ -71,6 +72,5 @@ public class HttpUtils {
         }
         return jsonObject;
     }
-
 
 }

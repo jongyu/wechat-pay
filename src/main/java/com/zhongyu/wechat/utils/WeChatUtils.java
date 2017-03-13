@@ -2,6 +2,8 @@ package com.zhongyu.wechat.utils;
 
 import com.alibaba.fastjson.JSONObject;
 import com.zhongyu.wechat.bean.AccessToken;
+import com.zhongyu.wechat.bean.Menu;
+import com.zhongyu.wechat.constants.RequestType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,7 +25,7 @@ public class WeChatUtils {
         AccessToken accessToken = null;
         String requestUrl = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=APPID&secret=APPSECRET";
         requestUrl = requestUrl.replace("APPID", appID).replace("APPSECRET", appSecret);
-        JSONObject jsonObject = HttpUtils.httpRequest(requestUrl, String.valueOf(Constants.GET), null);
+        JSONObject jsonObject = HttpUtils.httpRequest(requestUrl, String.valueOf(RequestType.GET), null);
         if (null != jsonObject) {
             try {
                 accessToken = new AccessToken();
