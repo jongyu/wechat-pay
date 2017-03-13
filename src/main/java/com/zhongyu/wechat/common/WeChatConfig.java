@@ -17,6 +17,6 @@ public class WeChatConfig {
 
     public static final String APIKEY = WeChatProperties.get("ApiKey");
 
-    public static final String NOTIFYURL = WeChatProperties.get("notifyUrl");
+    public static final String DOMAIN = WeChatProperties.get("Domain");
 
 }

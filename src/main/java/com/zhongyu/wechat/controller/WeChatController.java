@@ -20,6 +20,11 @@ public class WeChatController {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
+    @GetMapping({"/", "index.html"})
+    public String oauth2() {
+        return null;
+    }
+
     /**
      * 接入微信后台
      *

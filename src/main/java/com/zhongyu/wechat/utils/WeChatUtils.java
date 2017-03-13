@@ -39,12 +39,15 @@ public class WeChatUtils {
         return accessToken;
     }
 
+    public String getOAuth2(){
+        return null;
+    }
+
     public static String getMoney(String amount) {
         if (amount == null) {
             return "";
         }
-        //金额转化为分为单位
-        String currency = amount.replaceAll("", "\\$|\\￥|\\,");  //处理包含, ￥ 或者$的金额
+        String currency = amount.replaceAll("", "\\$|\\￥|\\,");
         int index = currency.indexOf(".");
         int length = currency.length();
         Long amLong = 0l;
@@ -86,7 +89,7 @@ public class WeChatUtils {
         return s;
     }
 
-    public String getIpAddr(HttpServletRequest request) {
+    public String getIpAddress(HttpServletRequest request) {
         String ip = request.getHeader("x-forwarded-for");
         if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
             ip = request.getHeader("Proxy-Client-IP");
