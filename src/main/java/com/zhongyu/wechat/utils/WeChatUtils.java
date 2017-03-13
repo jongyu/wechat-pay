@@ -12,11 +12,18 @@ public class WeChatUtils {
 
     private static Logger logger = LoggerFactory.getLogger(WeChatUtils.class);
 
+    /**
+     * 获取微信access_token
+     *
+     * @param appID
+     * @param appSecret
+     * @return
+     */
     public static AccessToken getAccessToken(String appID, String appSecret) {
         AccessToken accessToken = null;
         String requestUrl = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=APPID&secret=APPSECRET";
         requestUrl = requestUrl.replace("APPID", appID).replace("APPSECRET", appSecret);
-        JSONObject jsonObject = HttpUtils.httpRequest(requestUrl, "GET", null);
+        JSONObject jsonObject = HttpUtils.httpRequest(requestUrl, String.valueOf(Constants.GET), null);
         if (null != jsonObject) {
             try {
                 accessToken = new AccessToken();
@@ -24,7 +31,7 @@ public class WeChatUtils {
                 accessToken.setExpiresIn(jsonObject.getInteger("expires_in"));
                 logger.info(String.valueOf(accessToken));
             } catch (Exception e) {
-                logger.error("获取token失败 errcode:{} errmsg:{}", jsonObject.getInteger("errcode"), jsonObject.getString("errmsg"));
+                logger.error("获取access_token失败 errcode:{} errmsg:{}", jsonObject.getInteger("errcode"), jsonObject.getString("errmsg"));
             }
         }
         return accessToken;

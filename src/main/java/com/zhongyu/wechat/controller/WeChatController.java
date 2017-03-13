@@ -20,6 +20,16 @@ public class WeChatController {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
+    /**
+     * 接入微信后台
+     *
+     * @param request
+     * @param response
+     * @param signature
+     * @param timestamp
+     * @param nonce
+     * @param echostr
+     */
     @GetMapping("security")
     public void doGet(HttpServletRequest request,
                       HttpServletResponse response,
@@ -41,7 +51,7 @@ public class WeChatController {
     }
 
     @PostMapping("security")
-    public void doPost(){
+    public void doPost() {
 
     }
 
