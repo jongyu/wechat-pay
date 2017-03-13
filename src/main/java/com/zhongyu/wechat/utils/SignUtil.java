@@ -5,7 +5,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
 /**
- * Created by ZhongYu on 2017/3/8.
+ * Created by ZhongYu on 3/12/2017.
  */
 public class SignUtil {
 
@@ -20,6 +20,7 @@ public class SignUtil {
         }
         MessageDigest messageDigest = null;
         String tmpStr = null;
+
         try {
             messageDigest = MessageDigest.getInstance("SHA-1");
             byte[] digest = messageDigest.digest(content.toString().getBytes());
@@ -27,7 +28,9 @@ public class SignUtil {
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
-        return false;
+
+        content = null;
+        return tmpStr != null ? tmpStr.equals(signature.toUpperCase()) : false;
     }
 
     private static String byteToStr(byte[] byteArray) {
@@ -38,13 +41,12 @@ public class SignUtil {
         return strDigest;
     }
 
-    private static String byteToHexStr(byte b) {
+    private static String byteToHexStr(byte mByte) {
         char[] Digit = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
         char[] tempArr = new char[2];
-        tempArr[0] = Digit[(b >>> 4) & 0X0F];
-        tempArr[1] = Digit[b & 0X0F];
-        String str = new String(tempArr);
-        return str;
+        tempArr[0] = Digit[(mByte >>> 4) & 0X0F];
+        tempArr[1] = Digit[mByte & 0X0F];
+        String s = new String(tempArr);
+        return s;
     }
-
 }

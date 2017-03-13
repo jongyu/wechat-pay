@@ -10,8 +10,6 @@
     <logger name="org.springframework" level="INFO"/>
 
     <root level="INFO">
-        <appender-ref ref="info-file-async"/>
-        <appender-ref ref="debug-file-async"/>
         <appender-ref ref="default"/>
     </root>
 
