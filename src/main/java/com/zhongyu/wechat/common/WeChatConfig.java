@@ -13,4 +13,10 @@ public class WeChatConfig {
 
     public static final String TOKEN = WeChatProperties.get("Token");
 
+    public static final String MCHID = WeChatProperties.get("MchId");
+
+    public static final String APIKEY = WeChatProperties.get("ApiKey");
+
+    public static final String NOTIFYURL = WeChatProperties.get("notifyUrl");
+
 }

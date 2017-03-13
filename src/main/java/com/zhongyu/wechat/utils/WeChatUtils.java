@@ -7,6 +7,10 @@ import com.zhongyu.wechat.common.WeChatConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.servlet.http.HttpServletRequest;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * Created by ZhongYu on 3/13/2017.
  */
@@ -16,8 +20,6 @@ public class WeChatUtils {
 
     /**
      * 获取微信access_token
-     *
-     * @return
      */
     public static AccessToken getAccessToken() {
         AccessToken accessToken = null;
@@ -35,6 +37,67 @@ public class WeChatUtils {
             }
         }
         return accessToken;
+    }
+
+    public static String getMoney(String amount) {
+        if (amount == null) {
+            return "";
+        }
+        //金额转化为分为单位
+        String currency = amount.replaceAll("", "\\$|\\￥|\\,");  //处理包含, ￥ 或者$的金额
+        int index = currency.indexOf(".");
+        int length = currency.length();
+        Long amLong = 0l;
+        if (index == -1) {
+            amLong = Long.valueOf(currency + "00");
+        } else if (length - index >= 3) {
+            amLong = Long.valueOf((currency.substring(0, index + 3)).replace(".", ""));
+        } else if (length - index == 2) {
+            amLong = Long.valueOf((currency.substring(0, index + 2)).replace(".", "") + 0);
+        } else {
+            amLong = Long.valueOf((currency.substring(0, index + 1)).replace(".", "") + "00");
+        }
+        return amLong.toString();
+    }
+
+    public static String getNonceStr() {
+        String currTime = getCurrTime();
+        String strTime = currTime.substring(8, currTime.length());
+        String strRandom = createRandom(4) + "";
+        return strTime + strRandom;
+    }
+
+    public static int createRandom(int length) {
+        int num = 1;
+        double random = Math.random();
+        if (random < 0.1) {
+            random = random + 0.1;
+        }
+        for (int i = 0; i < length; i++) {
+            num = num * 10;
+        }
+        return (int) ((random * num));
+    }
+
+    public static String getCurrTime() {
+        Date now = new Date();
+        SimpleDateFormat outFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+        String s = outFormat.format(now);
+        return s;
+    }
+
+    public String getIpAddr(HttpServletRequest request) {
+        String ip = request.getHeader("x-forwarded-for");
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("Proxy-Client-IP");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("WL-Proxy-Client-IP");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getRemoteAddr();
+        }
+        return ip;
     }
 
 }
