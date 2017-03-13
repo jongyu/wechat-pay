@@ -1,7 +1,7 @@
 ### Maven ###
 target/
 
-### STS & Eclipse ###
+### STS + Eclipse ###
 .apt_generated
 .classpath
 .factorypath
