@@ -31,7 +31,7 @@ public class MenuTest {
         three.add(three_1);
         menu.add(three);
 
-        MenusUtils.create(menu);
+        WeChatUtils.createMenu(menu);
     }
 
 }
