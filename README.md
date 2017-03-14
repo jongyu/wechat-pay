@@ -12,5 +12,5 @@ resources/wechat.properties
 * Domain 微信支付通知地址
 例子
 ```
-http://zhongyu.ren/
+http://zhongyu.ren/pay_notify
 ```
