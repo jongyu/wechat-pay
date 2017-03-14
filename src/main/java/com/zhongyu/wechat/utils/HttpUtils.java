@@ -2,7 +2,7 @@ package com.zhongyu.wechat.utils;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.zhongyu.wechat.common.RequestType;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
@@ -11,12 +11,17 @@ import javax.net.ssl.TrustManager;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.Map;
 
 /**
  * Created by ZhongYu on 3/13/2017.
  */
 public class HttpUtils {
+
+    private static final String DEFAULT_CHARSET = "UTF-8";
+    private static final String _GET = "GET";
+    private static final String _POST = "POST";
 
     public static JSONObject httpRequest(String requestUrl, String requestMethod, String outputStr) {
         JSONObject jsonObject = null;
@@ -40,14 +45,14 @@ public class HttpUtils {
             //设置请求方式（GET/POST）
             httpUrlConn.setRequestMethod(requestMethod);
 
-            if (String.valueOf(RequestType.GET).equalsIgnoreCase(requestMethod)) {
+            if (_GET.equalsIgnoreCase(requestMethod)) {
                 httpUrlConn.connect();
             }
 
             //当有数据提交时
             if (null != outputStr) {
                 OutputStream outputStream = httpUrlConn.getOutputStream();
-                outputStream.write(outputStr.getBytes("UTF-8"));
+                outputStream.write(outputStr.getBytes(DEFAULT_CHARSET));
                 outputStream.close();
             }
 
@@ -91,16 +96,11 @@ public class HttpUtils {
         return http;
     }
 
-    public static String post(String url, String params) throws Exception {
+    public static String get(String url, Map<String, String> params, Map<String, String> headers) throws Exception {
         HttpURLConnection http = null;
-        http = initHttp(url, "POST", null);
-        OutputStream out = http.getOutputStream();
-        out.write(params.getBytes("UTF-8"));
-        out.flush();
-        out.close();
-
+        http = initHttp(initParams(url, params), _GET, headers);
         InputStream in = http.getInputStream();
-        BufferedReader read = new BufferedReader(new InputStreamReader(in, "UTF-8"));
+        BufferedReader read = new BufferedReader(new InputStreamReader(in, DEFAULT_CHARSET));
         String valueString = null;
         StringBuffer bufferRes = new StringBuffer();
         while ((valueString = read.readLine()) != null) {
@@ -111,6 +111,75 @@ public class HttpUtils {
             http.disconnect();
         }
         return bufferRes.toString();
+    }
+
+    public static String get(String url) throws Exception {
+        return get(url, null);
+    }
+
+    public static String get(String url, Map<String, String> params) throws Exception {
+        return get(url, params, null);
+    }
+
+    public static String post(String url, String params) throws Exception {
+        HttpURLConnection http = null;
+        http = initHttp(url, _POST, null);
+        OutputStream out = http.getOutputStream();
+        out.write(params.getBytes(DEFAULT_CHARSET));
+        out.flush();
+        out.close();
+
+        InputStream in = http.getInputStream();
+        BufferedReader read = new BufferedReader(new InputStreamReader(in, DEFAULT_CHARSET));
+        String valueString = null;
+        StringBuffer bufferRes = new StringBuffer();
+        while ((valueString = read.readLine()) != null) {
+            bufferRes.append(valueString);
+        }
+        in.close();
+        if (http != null) {
+            http.disconnect();
+        }
+        return bufferRes.toString();
+    }
+
+    public static String initParams(String url, Map<String, String> params) throws UnsupportedEncodingException {
+        if (null == params || params.isEmpty()) {
+            return url;
+        }
+        StringBuilder sb = new StringBuilder(url);
+        if (url.indexOf("?") == -1) {
+            sb.append("?");
+        }
+        sb.append(map2Url(params));
+        return sb.toString();
+    }
+
+    public static String map2Url(Map<String, String> paramToMap) throws UnsupportedEncodingException {
+        return map2Url(paramToMap, true);
+    }
+
+    public static String map2Url(Map<String, String> paramToMap, boolean isEncode) throws UnsupportedEncodingException {
+        if (null == paramToMap || paramToMap.isEmpty()) {
+            return null;
+        }
+        StringBuffer url = new StringBuffer();
+        boolean isfist = true;
+        for (Map.Entry<String, String> entry : paramToMap.entrySet()) {
+            if (isfist) {
+                isfist = false;
+            } else {
+                url.append("&");
+            }
+            url.append(entry.getKey()).append("=");
+            String value = entry.getValue();
+            if (StringUtils.isNotEmpty(value) && isEncode) {
+                url.append(URLEncoder.encode(value, DEFAULT_CHARSET));
+            } else {
+                url.append(value);
+            }
+        }
+        return url.toString();
     }
 
 }

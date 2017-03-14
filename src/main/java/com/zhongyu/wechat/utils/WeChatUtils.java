@@ -59,8 +59,8 @@ public class WeChatUtils {
         paraMap.put("notify_url", WeChatConfig.DOMAIN);
         String sign = PayUtils.getSign(paraMap, MCHSECRET);
         paraMap.put("sign", sign);
-        String xml = MapToXmlUtils.MapToXml(paraMap);
-        String xmlStr = HttpKit.post(requestUrl, xml);
+        String xml = MapUtils.MapToXml(paraMap);
+        String xmlStr = HttpUtils.post(requestUrl, xml);
         return xmlStr;
     }
 

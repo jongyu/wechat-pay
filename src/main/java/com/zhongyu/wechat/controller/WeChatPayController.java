@@ -3,10 +3,9 @@ package com.zhongyu.wechat.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.zhongyu.wechat.common.WeChatConfig;
-import com.zhongyu.wechat.utils.MapToXmlUtils;
+import com.zhongyu.wechat.utils.MapUtils;
 import com.zhongyu.wechat.utils.PayUtils;
 import com.zhongyu.wechat.utils.WeChatUtils;
-import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,7 +55,7 @@ public class WeChatPayController {
             String xmlStr = WeChatUtils.unifiedOrder(paraMap);
             String prepay_id = "", nonce_str = "", sign = "";
             if (xmlStr.indexOf("SUCCESS") != -1) {
-                Map<String, String> map = MapToXmlUtils.doXMLParse(xmlStr);
+                Map<String, String> map = MapUtils.doXMLParse(xmlStr);
                 logger.info(" get doXMLParse:{}", map);
                 prepay_id = MapUtils.getString(map, "prepay_id");
                 nonce_str = MapUtils.getString(map, "nonce_str");
@@ -88,7 +87,7 @@ public class WeChatPayController {
             response.setContentType("text/xml");
             String userid = (String) request.getSession().getAttribute("userid");
             InputStream in = request.getInputStream();
-            Map<String, String> map = MapToXmlUtils.doXMLParseInputStream(in);
+            Map<String, String> map = MapUtils.doXMLParseInputStream(in);
             String return_code = MapUtils.getString(map, "return_code");
             String openid = MapUtils.getString(map, "openid");
             String out_trade_no = MapUtils.getString(map, "out_trade_no");
