@@ -27,7 +27,7 @@ public class WeChatPayController {
 
     private static Logger logger = LoggerFactory.getLogger(WeChatPayController.class);
 
-    @GetMapping("WeChatPay/pay/redirect")
+    @GetMapping("redirect")
     public String wechatCallBack(HttpServletRequest request, @RequestParam("code") String code, @RequestParam("state") String state) {
         JSONObject jsonObject = WeChatUtils.getOAuth2AccessToken(code);
         request.getSession().setAttribute("openid", jsonObject.getString("openid"));
