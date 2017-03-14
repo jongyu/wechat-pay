@@ -8,6 +8,11 @@ import com.zhongyu.wechat.common.menu.Menu;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import static com.zhongyu.wechat.common.WeChatConfig.MCHSECRET;
+
 /**
  * Created by ZhongYu on 3/13/2017.
  */
@@ -41,6 +46,22 @@ public class WeChatUtils {
             return jsonObject;
         }
         return null;
+    }
+
+    public static String unifiedOrder(Map<String, String> params) throws Exception {
+        Map<String, String> paraMap = new HashMap<>();
+        String requestUrl = "https://api.mch.weixin.qq.com/pay/unifiedorder";
+        paraMap.putAll(params);
+        paraMap.put("appid", WeChatConfig.APPID);
+        paraMap.put("mch_id", WeChatConfig.MCHID);
+        paraMap.put("nonce_str", PayUtils.create_nonce_str());
+        paraMap.put("trade_type", "JSAPI");
+        paraMap.put("notify_url", WeChatConfig.DOMAIN);
+        String sign = PayUtils.getSign(paraMap, MCHSECRET);
+        paraMap.put("sign", sign);
+        String xml = MapToXmlUtils.MapToXml(paraMap);
+        String xmlStr = HttpKit.post(requestUrl, xml);
+        return xmlStr;
     }
 
     public static void createMenu(Menu menu) {
