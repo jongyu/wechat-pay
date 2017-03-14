@@ -22,7 +22,7 @@ public class WeChatController {
 
     @GetMapping({"/", "index.html"})
     public String oauth2() {
-        return null;
+        return "pay";
     }
 
     /**

@@ -4,12 +4,20 @@ import com.alibaba.fastjson.JSONObject;
 import com.zhongyu.wechat.bean.AccessToken;
 import com.zhongyu.wechat.common.RequestType;
 import com.zhongyu.wechat.common.WeChatConfig;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+import org.xmlpull.v1.XmlPullParserFactory;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.*;
 
 /**
  * Created by ZhongYu on 3/13/2017.
@@ -39,15 +47,45 @@ public class WeChatUtils {
         return accessToken;
     }
 
-    public String getOAuth2(){
+    public static JSONObject getOAuth2AccessToken(String code) {
+        String requestUrl = "https://api.weixin.qq.com/sns/oauth2/access_token?appid=APPID&secret=SECRET&code=CODE&grant_type=authorization_code";
+        requestUrl = requestUrl.replace("APPID", WeChatConfig.APPID).replace("SECRET", WeChatConfig.APPSECRET).replace("CODE", code);
+        JSONObject jsonObject = HttpUtils.httpRequest(requestUrl, String.valueOf(RequestType.GET), null);
+        if (null != jsonObject) {
+            return jsonObject;
+        }
         return null;
+    }
+
+    public static String unifiedOrder(Map<String, String> params) throws Exception {
+        String requestUrl = "https://api.mch.weixin.qq.com/pay/unifiedorder";
+        Map<String, String> map = new HashMap<>();
+        map.putAll(params);
+        map.put("appid", WeChatConfig.APPID);
+        map.put("mch_id", WeChatConfig.MCHID);
+        map.put("nonce_str", getNonceStr());
+        map.put("trade_type", "JSAPI");
+        map.put("notify_url", WeChatConfig.DOMAIN);
+        map.put("out_trade_no", createOrder());
+        map.put("sign", getSign(map, WeChatConfig.MCHSECRET));
+        String xml = MapToXml(map);
+        String xmlStr = HttpUtils.post(requestUrl, xml);
+        return xmlStr;
+    }
+
+    public static String createOrder() {
+        DateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
+        StringBuilder stringBuilder = new StringBuilder(format.format(new Date()));
+        for (int i = 0; i < 1; i++)
+            stringBuilder.append(new Random().nextInt(2));
+        return stringBuilder.toString();
     }
 
     public static String getMoney(String amount) {
         if (amount == null) {
             return "";
         }
-        String currency = amount.replaceAll("", "\\$|\\￥|\\,");
+        String currency = amount.replaceAll("\\$|\\￥|\\,", "");
         int index = currency.indexOf(".");
         int length = currency.length();
         Long amLong = 0l;
@@ -89,7 +127,7 @@ public class WeChatUtils {
         return s;
     }
 
-    public String getIpAddress(HttpServletRequest request) {
+    public static String getIpAddress(HttpServletRequest request) {
         String ip = request.getHeader("x-forwarded-for");
         if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
             ip = request.getHeader("Proxy-Client-IP");
@@ -101,6 +139,99 @@ public class WeChatUtils {
             ip = request.getRemoteAddr();
         }
         return ip;
+    }
+
+    public static String getSign(Map<String, String> params, String appkey) {
+        Set<String> keysSet = params.keySet();
+        Object[] keys = keysSet.toArray();
+        Arrays.sort(keys);
+        StringBuffer temp = new StringBuffer();
+        boolean first = true;
+        for (Object key : keys) {
+            if (first) {
+                first = false;
+            } else {
+                temp.append("&");
+            }
+            temp.append(key).append("=");
+            Object value = params.get(key);
+            String valueString = "";
+            if (null != value) {
+                valueString = value.toString();
+            }
+            temp.append(valueString);
+        }
+        String stringSignTemp = temp.toString() + "&key=" + appkey;
+        String signValue = DigestUtils.md5Hex(stringSignTemp).toUpperCase();
+        return signValue;
+    }
+
+    public static String MapToXml(Map<String, String> map) {
+        return MapToXmlWithTag(map, "xml");
+    }
+
+    public static String MapToXmlWithTag(Map<String, String> map, String tag) {
+        String xml = "<" + tag + ">";
+        Iterator<Map.Entry<String, String>> iter = map.entrySet().iterator();
+        while (iter.hasNext()) {
+            Map.Entry<String, String> entry = iter.next();
+            String key = entry.getKey();
+            String val = entry.getValue();
+            xml += "<" + key + ">" + val + "</" + key + ">";
+        }
+        xml += "</" + tag + ">";
+        return xml;
+    }
+
+    public static Map<String, String> doXMLParse(String xml) throws XmlPullParserException, IOException {
+        InputStream inputStream = new ByteArrayInputStream(xml.getBytes());
+        Map<String, String> map = null;
+        XmlPullParser pullParser = XmlPullParserFactory.newInstance().newPullParser();
+        pullParser.setInput(inputStream, "UTF-8");
+        int eventType = pullParser.getEventType();
+        while (eventType != XmlPullParser.END_DOCUMENT) {
+            switch (eventType) {
+                case XmlPullParser.START_DOCUMENT:
+                    map = new HashMap<String, String>();
+                    break;
+                case XmlPullParser.START_TAG:
+                    String key = pullParser.getName();
+                    if (key.equals("xml"))
+                        break;
+                    String value = pullParser.nextText();
+                    map.put(key, value);
+                    break;
+                case XmlPullParser.END_TAG:
+                    break;
+            }
+            eventType = pullParser.next();
+        }
+        return map;
+    }
+
+    public static Map<String, String> doXMLParseInputStream(InputStream inputStream) throws XmlPullParserException, IOException {
+        Map<String, String> map = null;
+        XmlPullParser pullParser = XmlPullParserFactory.newInstance().newPullParser();
+        pullParser.setInput(inputStream, "UTF-8");
+        int eventType = pullParser.getEventType();
+        while (eventType != XmlPullParser.END_DOCUMENT) {
+            switch (eventType) {
+                case XmlPullParser.START_DOCUMENT:
+                    map = new HashMap<String, String>();
+                    break;
+                case XmlPullParser.START_TAG:
+                    String key = pullParser.getName();
+                    if (key.equals("xml"))
+                        break;
+                    String value = pullParser.nextText();
+                    map.put(key, value);
+                    break;
+                case XmlPullParser.END_TAG:
+                    break;
+            }
+            eventType = pullParser.next();
+        }
+        return map;
     }
 
 }

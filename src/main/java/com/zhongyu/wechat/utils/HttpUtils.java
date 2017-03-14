@@ -8,11 +8,10 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
+import java.io.*;
+import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Map;
 
 /**
  * Created by ZhongYu on 3/13/2017.
@@ -71,6 +70,47 @@ public class HttpUtils {
             e.printStackTrace();
         }
         return jsonObject;
+    }
+
+    private static HttpURLConnection initHttp(String url, String method, Map<String, String> headers) throws IOException {
+        URL _url = new URL(url);
+        HttpURLConnection http = (HttpURLConnection) _url.openConnection();
+        http.setConnectTimeout(5000);
+        http.setReadTimeout(5000);
+        http.setRequestMethod(method);
+        http.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+        http.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.146 Safari/537.36");
+        if (null != headers && !headers.isEmpty()) {
+            for (Map.Entry<String, String> entry : headers.entrySet()) {
+                http.setRequestProperty(entry.getKey(), entry.getValue());
+            }
+        }
+        http.setDoOutput(true);
+        http.setDoInput(true);
+        http.connect();
+        return http;
+    }
+
+    public static String post(String url, String params) throws Exception {
+        HttpURLConnection http = null;
+        http = initHttp(url, "POST", null);
+        OutputStream out = http.getOutputStream();
+        out.write(params.getBytes("UTF-8"));
+        out.flush();
+        out.close();
+
+        InputStream in = http.getInputStream();
+        BufferedReader read = new BufferedReader(new InputStreamReader(in, "UTF-8"));
+        String valueString = null;
+        StringBuffer bufferRes = new StringBuffer();
+        while ((valueString = read.readLine()) != null) {
+            bufferRes.append(valueString);
+        }
+        in.close();
+        if (http != null) {
+            http.disconnect();
+        }
+        return bufferRes.toString();
     }
 
 }
