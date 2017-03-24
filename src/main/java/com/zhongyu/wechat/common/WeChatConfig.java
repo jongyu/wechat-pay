@@ -19,4 +19,6 @@ public class WeChatConfig {
 
     public static final String DOMAIN = WeChatProperties.get("Domain");
 
+    public static String NOTIFY_URL = String.valueOf(new StringBuffer(DOMAIN).append("/pay_notify"));
+
 }

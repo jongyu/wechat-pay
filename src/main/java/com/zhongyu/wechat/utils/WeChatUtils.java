@@ -56,7 +56,7 @@ public class WeChatUtils {
         paraMap.put("mch_id", WeChatConfig.MCHID);
         paraMap.put("nonce_str", PayUtils.create_nonce_str());
         paraMap.put("trade_type", "JSAPI");
-        paraMap.put("notify_url", WeChatConfig.DOMAIN);
+        paraMap.put("notify_url", WeChatConfig.NOTIFY_URL);
         String sign = PayUtils.getSign(paraMap, MCHSECRET);
         paraMap.put("sign", sign);
         String xml = MapUtils.MapToXml(paraMap);
@@ -66,7 +66,7 @@ public class WeChatUtils {
 
     public static void createMenu(Menu menu) {
         String requestUrl = "https://api.weixin.qq.com/cgi-bin/menu/create?access_token=ACCESS_TOKEN";
-        requestUrl = requestUrl.replace("ACCESS_TOKEN", "-wxM51bzfD3DI01esFmUf1foextzOXaC-JQg3FI6nny99NYVHA6-E-3ff2i2i00yxGU7DuYs3aW06DnhiSzzGzGZlg3lgO_KHIhdyWqIRW8ZwS4fnvMeKCrLdlCbEuGzCOTaAJALXC");
+        requestUrl = requestUrl.replace("ACCESS_TOKEN", "得到的Token");
         JSONObject jsonObject = HttpUtils.httpRequest(requestUrl, String.valueOf(RequestType.POST), JsonMapper.nonEmptyMapper().toJson(menu));
         if (null != jsonObject) {
             if (0 != jsonObject.getInteger("errcode")) {
